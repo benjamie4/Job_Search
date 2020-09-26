@@ -143,14 +143,8 @@ for i,v in schools_dict.items():
 
 
     if v == 'Calexico Unified School District Personnel Commision':
-        try:
-            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CLASS_NAME, 'footable-visible footable-first-column')))
-            print("Page is ready!")
-        except TimeoutException:
-            print("Loading took too much time!")
-
-
-        jobs = driver.find_elements_by_class_name('footable-visible footable-first-column')
+        time.sleep(3)
+        jobs = driver.find_elements_by_xpath('//a[contains(@href,"/Home/DistrictJobPosting/")]')
 
         for job in jobs:
             SchoolDistrict_links_with_text.append(job.text)
@@ -164,5 +158,3 @@ for i,v in schools_dict.items():
                 outFile.write(i + "\n")
 
         SchoolDistrict_links_with_text = []
-
-
