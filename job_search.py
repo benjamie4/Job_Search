@@ -82,8 +82,9 @@ driver = webdriver.Chrome(executable_path='C:\\Users\\Ben\\Documents\\ECESD-Scri
 
 
 schools_dict = {'https://www.edjoin.org/besd':'Brawley Elementary School District','https://www.edjoin.org/Home/Jobs?stateID=24&countyID=13&districtID=6371':'Calexico Unified School District Personnel Commision','https://www.edjoin.org/ECESD':'El Centro Elementary School District','https://www.edjoin.org/buhsd':'Brawley Union High School District','https://www.edjoin.org/calexico':'Calexico Unified School District','https://www.edjoin.org/calipatria': 'Calipatria Unified'
-           ,'https://www.edjoin.org/CentralUnionHSD':'Central Union High School District','https://www.edjoin.org/heberschooldistrict':'Heber Elementary','https://www.edjoin.org/holtvilleusd':'Heber Elementary','https://www.edjoin.org/imperialusd':'Imperial Unified School District'
-                ,'https://www.edjoin.org/Home/Jobs?stateID=24&countyID=13&districtID=208':'Holtville Unified School District'}
+           ,'https://www.edjoin.org/CentralUnionHSD':'Central Union High School District','https://www.edjoin.org/heberschooldistrict':'Heber Elementary','https://www.edjoin.org/holtvilleusd':'Holtville Unified School District','https://www.edjoin.org/imperialusd':'Imperial Unified School District','https://www.edjoin.org/Home/Jobs?stateID=24&countyID=13&districtID=4228':'Imperial Valley College'
+
+                }
 
 
 SchoolDistrict_links_with_text = []
@@ -114,12 +115,51 @@ for i,v in schools_dict.items():
 
     driver.get(i)
     time.sleep(3)
+    # TODO: Delete extra spacing
+    if v == 'Calexico Unified School District Personnel Commision':
+        time.sleep(3)
+        jobs = driver.find_elements_by_xpath('//a[contains(@href,"/Home/DistrictJobPosting/")]')
+
+
+        for job in jobs:
+            job = job.text
+
+
+            SchoolDistrict_links_with_text.append(job)
+
+        with open('Job_search_in_Imperial.csv', 'a') as outFile:
+
+            outFile.write('\n' + "\n")
+            outFile.write(v + "\n")
+            outFile.write('--------------------------' + "\n")
+            for i in SchoolDistrict_links_with_text:
+                outFile.write(i + "\n")
+
+        SchoolDistrict_links_with_text = []
+
+    # TODO: Delete extra spacing
+    if v == 'Imperial Valley College':
+        time.sleep(3)
+        jobs = driver.find_elements_by_xpath('//a[contains(@href,"/Home/DistrictJobPosting/")]')
+
+        for job in jobs:
+            SchoolDistrict_links_with_text.append(job.text)
+
+        with open('Job_search_in_Imperial.csv', 'a') as outFile:
+
+            outFile.write('\n' + "\n")
+            outFile.write(v + "\n")
+            outFile.write('--------------------------' + "\n")
+            for i in SchoolDistrict_links_with_text:
+                outFile.write(i + "\n")
+
+        SchoolDistrict_links_with_text = []
 
 
 
 
     delay = 3  # seconds
-    if v != 'Calexico Unified School District Personnel Commision':
+    if v != 'Calexico Unified School District Personnel Commision' and v !='Imperial Valley College':
         try:
             myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CLASS_NAME, 'card-job-title')))
             print("Page is ready!")
@@ -142,19 +182,3 @@ for i,v in schools_dict.items():
         SchoolDistrict_links_with_text = []
 
 
-    if v == 'Calexico Unified School District Personnel Commision':
-        time.sleep(3)
-        jobs = driver.find_elements_by_xpath('//a[contains(@href,"/Home/DistrictJobPosting/")]')
-
-        for job in jobs:
-            SchoolDistrict_links_with_text.append(job.text)
-
-        with open('Job_search_in_Imperial.csv', 'a') as outFile:
-
-            outFile.write('\n' + "\n")
-            outFile.write(v + "\n")
-            outFile.write('--------------------------' + "\n")
-            for i in SchoolDistrict_links_with_text:
-                outFile.write(i + "\n")
-
-        SchoolDistrict_links_with_text = []
