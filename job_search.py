@@ -1,4 +1,5 @@
 import time
+import driver as driver
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -8,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import Select
 
 headers = requests.utils.default_headers()
 headers.update({
@@ -48,6 +50,65 @@ write_jobs_alpha('Imperial County', imperial_county_links_with_text)
 
 # Starts selenium webdriver for javascript pages on Edjoin
 driver = webdriver.Chrome(executable_path='C:\\Users\\besquivel\\Documents\\Job_Search\\Chromedriver')
+
+# California State Jobs
+california_state_job_list = []
+driver.get('https://www.calcareers.ca.gov/CalHRPublic/Search/JobSearchResults.aspx#locid=122')
+time.sleep(6)
+#driver.find_element_by_xpath("//select[@name='ctl00$cphMainContent$ddlRowCount']/option[text()='100']").click()
+select = Select(driver.find_element_by_name('ctl00$cphMainContent$ddlRowCount'))
+select.select_by_visible_text('100 Jobs')
+time.sleep(5)
+#jobs = driver.find_elements_by_id('cphMainContent_rptResults_hlViewJobPosting_' + '1')
+i = 1
+jobs = driver.find_elements_by_xpath('cphMainContent_rptResults_hlViewJobPosting_' + str(i))
+# TODO: Finish troubleshooting getting california jobs
+
+write_jobs('State of California', california_state_job_list)
+
+
+
+# Brawley Job Openings
+Brawley_Job_List = []
+driver.get('http://www.brawley-ca.gov/section/Personnel/Job-Openings')
+jobs = driver.find_elements_by_xpath('//a[contains(@href,"cms/kcfinder/upload/files")]')
+for job in jobs:
+    Brawley_Job_List.append(job.text)
+
+write_jobs('City of Brawley', Brawley_Job_List)
+
+
+# Grabs job data from City of Imperial Website
+soup = requests.get("https://agency.governmentjobs.com/imperialca/default.cfm", headers=headers)
+soup1 = BeautifulSoup(soup.content, "lxml")
+
+# Creates a list of the jobs listed on the website
+city_of_imperial_jobs = []
+for a in soup1.findAll("a", {"class": "jobtitle"}):
+    if a.text != ' ':
+        city_of_imperial_jobs.append(a.text)
+
+
+write_jobs('City of Imperial', city_of_imperial_jobs)
+
+
+# Grabs job data from City of Imperial Website
+soup = requests.get("https://www.governmentjobs.com/careers/imperialcourts", headers=headers)
+soup1 = BeautifulSoup(soup.content, "lxml")
+
+# Creates a list of the jobs listed on the website
+superior_court_jobs = []
+
+driver.get('https://www.governmentjobs.com/careers/imperialcourts/')
+time.sleep(2)
+jobs = driver.find_elements_by_xpath('//a[contains(@href,"careers/imperialcourts/jobs")]')
+for job in jobs:
+    job = job.text
+    superior_court_jobs.append(job)
+    print(job)
+
+write_jobs('California Superior Court of California, Imperial County', superior_court_jobs)
+
 # Key-Value Pair of school websites and school names
 schools_dict = {'https://www.edjoin.org/besd': 'Brawley Elementary School District',
                 'https://www.edjoin.org/Home/Jobs?stateID=24&countyID=13&districtID=6371': 'Calexico Unified School District Personnel Commision',
@@ -129,3 +190,4 @@ for i, v in schools_dict.items():
 
         write_jobs(v, SchoolDistrict_links_with_text)
         SchoolDistrict_links_with_text = []
+
