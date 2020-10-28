@@ -60,9 +60,12 @@ select = Select(driver.find_element_by_name('ctl00$cphMainContent$ddlRowCount'))
 select.select_by_visible_text('100 Jobs')
 time.sleep(5)
 #jobs = driver.find_elements_by_id('cphMainContent_rptResults_hlViewJobPosting_' + '1')
-i = 1
-jobs = driver.find_elements_by_xpath('cphMainContent_rptResults_hlViewJobPosting_' + str(i))
-# TODO: Finish troubleshooting getting california jobs
+for i in range(1,100):
+    jobs = driver.find_elements_by_id('cphMainContent_rptResults_hlViewJobPosting_' + str(i))
+    for job in jobs:
+        job = job.text
+        california_state_job_list.append(job)
+
 
 write_jobs('State of California', california_state_job_list)
 
