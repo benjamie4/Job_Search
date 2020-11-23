@@ -51,15 +51,24 @@ write_jobs_alpha('Imperial County', imperial_county_links_with_text)
 # Starts selenium webdriver for javascript pages on Edjoin
 driver = webdriver.Chrome(executable_path='C:\\Users\\besquivel\\Documents\\Job_Search\\Chromedriver')
 
+# IID
+IID_jobs = []
+driver.get('https://www.governmentjobs.com/careers/iid')
+time.sleep(5)
+jobs = driver.find_elements_by_class_name('job-table-title')
+for job in jobs:
+    print(job.text)
+    IID_jobs.append(job.text)
+IID_jobs.pop(0)
+write_jobs('Imperial Irrigation District', IID_jobs)
+
 # California State Jobs
 california_state_job_list = []
 driver.get('https://www.calcareers.ca.gov/CalHRPublic/Search/JobSearchResults.aspx#locid=122')
 time.sleep(6)
-#driver.find_element_by_xpath("//select[@name='ctl00$cphMainContent$ddlRowCount']/option[text()='100']").click()
 select = Select(driver.find_element_by_name('ctl00$cphMainContent$ddlRowCount'))
 select.select_by_visible_text('100 Jobs')
 time.sleep(5)
-#jobs = driver.find_elements_by_id('cphMainContent_rptResults_hlViewJobPosting_' + '1')
 for i in range(1,100):
     jobs = driver.find_elements_by_id('cphMainContent_rptResults_hlViewJobPosting_' + str(i))
     for job in jobs:
